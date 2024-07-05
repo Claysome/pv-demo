@@ -1,4 +1,7 @@
 {
+    "data": {
+        "path": "data/pv_data.parquet"
+    },
     "vmd": {
         "alpha": 1000,
         "K": 3

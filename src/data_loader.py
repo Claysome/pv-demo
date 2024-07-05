@@ -28,15 +28,3 @@ class DataLoader:
             y.append(data[i + window_size:i + window_size + step_size])
         return X, y
     
-
-
-
-if __name__ == "__main__":
-
-    dl = DataLoader()
-    df = dl.load_data("2015-01-01", "2015-5-31")
-    from src.pca_application import PCAApplication
-    df.dropna(inplace=True)
-    PCAApplication.plot_explained_variance(df)
-    # data = dl.create_window(df)
-    # print(data)
