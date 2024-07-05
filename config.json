@@ -1,0 +1,9 @@
+{
+    "vmd": {
+        "alpha": 1000,
+        "K": 3
+    },
+    "pca": {
+        "components": 4
+    }
+}
