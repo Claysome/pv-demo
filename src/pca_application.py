@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
@@ -11,7 +12,7 @@ class PCAApplication:
     def apply(cls, data, n_components):
         pca = PCA(n_components=n_components)
         pca_features = pca.fit_transform(data)
-        return pca_features
+        return pd.concat([data, pd.DataFrame(pca_features)], axis=1)
     
     @classmethod
     def plot_explained_variance(cls, data):

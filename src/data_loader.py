@@ -2,8 +2,9 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 import pandas as pd
+import numpy as np
 from utils import TimeFrame
-
+from sklearn.preprocessing import MinMaxScaler
 
 class DataLoader:
 
@@ -11,7 +12,7 @@ class DataLoader:
         self.data_path = data_path
 
     def load_data(self, start_date=None, end_date=None):
-        df = pd.read_parquet(self.data_path).drop(columns=["Active_Energy_Delivered_Received", "Current_Phase_Average", "Performance_Ratio"])
+        df = pd.read_parquet(self.data_path).drop(columns=["Active_Energy_Delivered_Received", "Current_Phase_Average", "Performance_Ratio", "Wind_Speed"]).ffill()
         df["date_time"] = pd.to_datetime(df["timestamp"])
         df.set_index("date_time", inplace=True)
         if start_date and end_date:

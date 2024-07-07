@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import pandas as pd
 from vmdpy import VMD
 from tqdm import tqdm
 from pathlib import Path
@@ -16,11 +17,19 @@ class VmdOptimizer:
     def __init__(self, data):
         self.data = data
 
-    def get_decomposed_signal(self):
+    def get_decomposed_signal(self, alpha, K):
+        v = VmdOptimizer.vmd_decompose(self.data, alpha, K)
+        df_vmd = pd.DataFrame(v.T)
+        df_vmd.columns = ['imf'+str(i) for i in range(K)]
+        return df_vmd
+
+    def get_decomposed_signal_by_opt(self):
         opt_params = self.optimize()
         alpha, K = opt_params[0], int(opt_params[1])
         v = VmdOptimizer.vmd_decompose(self.data, alpha, K)
-        return v
+        df_vmd = pd.DataFrame(v.T)
+        df_vmd.columns = ['imf'+str(i) for i in range(K)]
+        return df_vmd
 
     def optimize(self):
         # def loss_function(x):
