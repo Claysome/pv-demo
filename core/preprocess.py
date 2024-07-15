@@ -12,17 +12,8 @@ class Preprocess:
 
     @classmethod
     def scale(cls, data, exclude=['timestamp']):
-        pass
+        for col in data.columns:
+            if col not in exclude:
+                data[col] = (data[col] - data[col].min()) / (data[col].max() - data[col].min())
+        return data
 
-    
-
-
-if __name__ == '__main__':
-    import sys
-    from pathlib import Path
-    sys.path.append(str(Path(__file__).parent.parent))
-    from core.data_loader import DataLoader
-    d = DataLoader('data/pv.csv')
-    data = d.get_data()
-    X_train, X_test, y_train, y_test = Preprocess.train_test_split(data, 'Active_Power')
-    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
