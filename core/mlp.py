@@ -1,15 +1,14 @@
 import joblib
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import r2_score, mean_absolute_percentage_error, mean_squared_error, mean_absolute_error
 
-
-class RF:
+class MLP:
 
     def __init__(self, data):
         self.data = data
 
-    def set_model(self, n_estimators=100, random_state=42):
-        self._model = RandomForestRegressor(n_estimators=n_estimators, random_state=random_state)
+    def set_model(self, hidden_layer_sizes=(100,), activation='relu', solver='adam', random_state=42):
+        self._model = MLPRegressor(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, random_state=random_state)
 
     @property
     def model(self):
@@ -37,5 +36,5 @@ class RF:
         plt.plot(y_test.values, label='actual')
         plt.plot(y_pred, label='prediction')
         plt.legend()
-        plt.savefig('images/rf_prediction.png')
+        plt.savefig('images/mlp_prediction.png')
         plt.show()
