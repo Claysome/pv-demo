@@ -25,13 +25,12 @@ class BP:
     
     def evaluate(self, y_test, y_pred):
         r2 = r2_score(y_test, y_pred)
-        mape = mean_absolute_percentage_error(y_test, y_pred)
         rmse = mean_squared_error(y_test, y_pred, squared=False)
         mae = mean_absolute_error(y_test, y_pred)
         print(f'R2: {r2}')
-        print(f'MAPE: {mape}')
         print(f'RMSE: {rmse}')
         print(f'MAE: {mae}')
+        return r2, rmse, mae
 
     @classmethod
     def plot(cls, y_test, y_pred):
