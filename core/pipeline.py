@@ -37,6 +37,11 @@ model3 = MLP(X_train)
 model1.set_model()
 model2.set_model()
 model3.set_model()
+# model1.train(X_train, y_train)
+# features = model1.feature_importance(X_train.columns)
+# X_train = X_train[features]
+# X_test = X_test[features]
+# model1.hyperparameter_search(X_train, y_train)
 
 model1.train(X_train, y_train)
 y_pred1 = model1.predict(X_test)
