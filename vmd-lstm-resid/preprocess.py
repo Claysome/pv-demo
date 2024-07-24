@@ -24,7 +24,7 @@ class Preprocess:
             'Global_Horizontal_Radiation': 'mean',
             'Diffuse_Horizontal_Radiation': 'mean',
             'Wind_Direction': 'mean',
-            'Weather_Daily_Rainfall': 'sum',  # 雨量用总和
+            'Weather_Daily_Rainfall': 'sum',
         }
         self.data = self.data.resample(freq).agg(agg_rules)
         self.data.reset_index(inplace=True)
