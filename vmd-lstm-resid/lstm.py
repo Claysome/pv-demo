@@ -50,7 +50,7 @@ def eval_lstm_by_group(model, test_loader, criterion, target_groups):
         outputs_values.append(outputs_group)
     outputs_values = np.sum(outputs_values, axis=0)
     # outputs_values = np.array([0 if x < 3 else x for x in outputs_values.flatten()]).reshape(-1, 1)
-    filter = pd.DataFrame({"timestamp": test_loader.dataset.data.index[:len(outputs_values)], "values": outputs_values.flatten()})
+    filter = pd.DataFrame({"timestamp": test_loader.dataset.data.index[-len(outputs_values):], "values": outputs_values.flatten()})
     filter.set_index("timestamp", inplace=True)
     filter["hour"] = filter.index.hour
     filter["values"] = filter.apply(lambda x: 0 if x["hour"] <= 6 or x["hour"] >= 20 else x["values"], axis=1)
