@@ -7,12 +7,56 @@ import numpy as np
 
 from preprocess import Preprocess
 from dataset import PVData
-from lstm import LSTMModel, train_lstm, eval_lstm, train_lstm_by_group, eval_lstm_by_group
+from svm import train_svm, eval_svm
+from lstm import LSTMModel, train_lstm, eval_lstm, train_lstm_by_group, eval_lstm_by_group, train_resid_lstm, eval_resid_lstm
 
 
 if __name__ == '__main__':
     target_groups = [1, 2, 3, 4, 5, 6]
     file_path = 'data/cleaned_pv.csv'
+
+####################################################SVM###################################################
+    # imf, resid, test = Preprocess(file_path).get_rep_data()
+    # train_dataset = PVData(imf)
+    # train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+    # 训练模型
+    # train_svm(train_loader)
+
+    # test_dataset = PVData(test)
+    # test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    # outputs_values, targets_values = eval_svm(test_loader)
+
+
+####################################################LSTM###################################################
+
+    # imf, resid, test = Preprocess(file_path).get_rep_data()
+    # train_dataset = PVData(imf)
+    # train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # input_size = imf.shape[1] - 1
+    # hidden_size1 = 100
+    # hidden_size2 = 200
+    # num_layers = 1
+    # output_size = 1
+
+    # model = LSTMModel(input_size, hidden_size1, hidden_size2, num_layers, output_size).to(device)
+    # criterion = nn.MSELoss()
+    # optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    # # 训练模型
+    # num_epochs = 15
+    # # train_lstm(model, train_loader, criterion, optimizer, num_epochs, device)
+
+    # test_dataset = PVData(test)
+    # test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    # model.load_state_dict(torch.load(f'vmd-lstm-resid/models/lstm.pth'))
+    # outputs_values, targets_values = eval_lstm(model, test_loader, criterion)
+
+
+#################################################VMD-LSTM###################################################
 
     # for target_group in target_groups:
     #     imf, resid, test = Preprocess(file_path).get_rep_data(target_group)
@@ -35,29 +79,9 @@ if __name__ == '__main__':
         # num_epochs = 15
         # train_lstm_by_group(model, train_loader, criterion, optimizer, num_epochs, device, target_group)
 
-    imf, resid, test = Preprocess(file_path).get_rep_data()
-    test_dataset = PVData(test)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    input_size = imf.shape[1] - 1
-    hidden_size1 = 100
-    hidden_size2 = 200
-    num_layers = 1
-    output_size = 1
-
-    model = LSTMModel(input_size, hidden_size1, hidden_size2, num_layers, output_size).to(device)
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
-    outputs_values, targets_values = eval_lstm_by_group(model, test_loader, criterion, target_groups)
-
-
-###########################################################################################################
-
     # imf, resid, test = Preprocess(file_path).get_rep_data()
-    # # train_dataset = PVData(imf)
-    # # train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    # test_dataset = PVData(test)
+    # test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -70,15 +94,40 @@ if __name__ == '__main__':
     # model = LSTMModel(input_size, hidden_size1, hidden_size2, num_layers, output_size).to(device)
     # criterion = nn.MSELoss()
     # optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # outputs_values, targets_values = eval_lstm_by_group(model, test_loader, criterion, target_groups)
 
-    # # 训练模型
+
+#################################################VMD-LSTM-RESID###################################################
+
+    imf, resid, test = Preprocess(file_path).get_rep_data()
+    resid_dataset = PVData(resid)
+    resid_loader = DataLoader(resid_dataset, batch_size=32, shuffle=False)
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    input_size = imf.shape[1] - 1
+    hidden_size1 = 100
+    hidden_size2 = 200
+    num_layers = 1
+    output_size = 1
+
+    model = LSTMModel(input_size, hidden_size1, hidden_size2, num_layers, output_size).to(device)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    # outputs_values, targets_values = eval_lstm_by_group(model, resid_loader, criterion, target_groups)
+    # resid_values = outputs_values.flatten() - targets_values.flatten()
+    # resid = resid.iloc[-len(resid_values):]
+    # resid["Active_Power"] = resid_values
+    # resid_dataset = PVData(resid)
+    # resid_loader = DataLoader(resid_dataset, batch_size=32, shuffle=False)
+
     # num_epochs = 15
-    # # train_lstm(model, train_loader, criterion, optimizer, num_epochs, device)
+    # train_resid_lstm(model, resid_loader, criterion, optimizer, num_epochs, device)
 
-    # test_dataset = PVData(test)
-    # test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    # model.load_state_dict(torch.load(f'vmd-lstm-resid/models/lstm.pth'))
-    # outputs_values, targets_values = eval_lstm(model, test_loader, criterion)
+    test_dataset = PVData(resid)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    outputs_values, targets_values = eval_resid_lstm(model, test_loader, criterion, target_groups)
+
 
     import matplotlib.pyplot as plt
     plt.plot(targets_values, label='True')
