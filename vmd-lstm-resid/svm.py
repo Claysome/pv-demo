@@ -27,6 +27,7 @@ def train_svm(loader):
     # 最佳参数组合: {'C': 100, 'epsilon': 0.2, 'gamma': 'scale', 'kernel': 'rbf', 'max_iter': 10000}
     # best_clf = grid_search.best_estimator_
     best_clf = svm.SVR(C=100, epsilon=0.2, gamma='scale', kernel='rbf', max_iter=10000)
+    best_clf.fit(X, y)
     joblib.dump(best_clf, 'vmd-lstm-resid/models/svm.pkl')
     print('Model Saved')
 
@@ -39,4 +40,4 @@ def eval_svm(loader):
         outputs = clf.predict(inputs.cpu().numpy())
         outputs_values.extend(outputs)
         targets_values.extend(targets.cpu().numpy())
-    return outputs_values, targets_values
+    return np.array(outputs_values), np.array(targets_values)

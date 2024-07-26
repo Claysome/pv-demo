@@ -100,7 +100,7 @@ def eval_lstm(model, test_loader, criterion):
     filter["hour"] = filter.index.hour
     filter["values"] = filter.apply(lambda x: 0 if x["hour"] <= 6 or x["hour"] >= 20 else x["values"], axis=1)
     outputs_values = filter["values"].values
-    return outputs_values, targets_values
+    return np.array(outputs_values), np.array(targets_values)
 
 
 def train_resid_lstm(model, train_loader, criterion, optimizer, num_epochs, device):
