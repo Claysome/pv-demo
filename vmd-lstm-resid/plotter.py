@@ -9,6 +9,7 @@ class Plotter:
     def __init__(self, path=None) -> None:
         self.path = path
         self.data = pd.DataFrame()
+        self._load_data()
 
     def _load_data(self):
         self.data["True"] = pd.read_csv(Path(self.path) / 'results1.csv')["True"]
@@ -37,6 +38,5 @@ class Plotter:
 
 if __name__ == '__main__':
     plotter = Plotter("vmd-lstm-resid/res")
-    plotter._load_data()
     print(plotter.data.head())
     plotter.plot(0, -1)
