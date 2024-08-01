@@ -16,13 +16,13 @@ class Plotter:
         self.data["lstm"] = pd.read_csv(Path(self.path) / 'results2.csv')["Predicted"]
         self.data["vmd-lstm"] = pd.read_csv(Path(self.path) / 'results3.csv')["Predicted"]
         self.data["vmd-lstm-resid"] = pd.read_csv(Path(self.path) / 'results4.csv')["Predicted"]
+        self.data["vmd-lstm-resid-sarima"] = pd.read_csv(Path(self.path) / 'results5.csv')["Predicted"]
         self.data['lstm'] = [float(pred.strip('[]')) for pred in self.data['lstm']]
 
     def plot(self, start_index, end_index):
         self.data[start_index:end_index].plot(figsize=(16, 10))
         self.metrics(self.data[start_index:end_index])
         plt.show()
-        plt.savefig("vmd-lstm-resid/res/plot_day.png")
 
     def metrics(self, data):
         for col in data.columns[1:]:
@@ -39,4 +39,4 @@ if __name__ == '__main__':
     plotter = Plotter("vmd-lstm-resid/res")
     plotter._load_data()
     print(plotter.data.head())
-    plotter.plot(-96, -1)
+    plotter.plot(0, -1)
