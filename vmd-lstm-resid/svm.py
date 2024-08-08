@@ -1,5 +1,6 @@
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 
@@ -40,4 +41,55 @@ def eval_svm(loader):
         outputs = clf.predict(inputs.cpu().numpy())
         outputs_values.extend(outputs)
         targets_values.extend(targets.cpu().numpy())
+    return np.array(outputs_values), np.array(targets_values)
+
+
+def train_svm_for_each_timepoint(loader):
+    # 逐时间点训练模型，全天96个时间点
+    for i in range(96):
+        exec(f"X_{i} = []")
+        exec(f"y_{i} = []")
+    
+    org_inputs, org_targets = [], []
+    for inputs, targets in loader:
+        inputs_flatten = inputs.cpu().numpy().reshape(inputs.size(0), -1)
+        org_inputs.extend(inputs_flatten)
+        org_targets.extend(targets.cpu().numpy())
+
+    for i in range(len(org_inputs)):
+        for j in range(96):
+            if (i + 96) % 96 == j:
+                exec(f"X_{j}.append(org_inputs[i])")
+                exec(f"y_{j}.append(org_targets[i])")
+    for i in range(96):
+        exec(f"X_{i} = np.array(X_{i})")
+        exec(f"y_{i} = np.array(y_{i})")
+        exec(f"clf_{i} = svm.SVR(C=100, epsilon=0.2, gamma='scale', kernel='rbf', max_iter=10000)")
+        exec(f"clf_{i}.fit(X_{i}, y_{i})")
+        exec(f"joblib.dump(clf_{i}, 'vmd-lstm-resid/models/svm_{i}.pkl')")
+        print(f"Model_{i} Saved")
+
+
+def eval_svm_for_each_timepoint(loader):
+    outputs_values, targets_values = [], []
+    for i in range(96):
+        exec(f"clf_{i} = joblib.load('vmd-lstm-resid/models/svm_{i}.pkl')")
+    org_inputs, org_targets = [], []
+    for inputs, targets in loader:
+        inputs_flatten = inputs.cpu().numpy().reshape(inputs.size(0), -1)
+        org_inputs.extend(inputs_flatten)
+        org_targets.extend(targets.cpu().numpy())
+
+    for i in range(len(org_inputs)):
+        for j in range(96):
+            if i % 96 == j:
+                exec(f"outputs = clf_{j}.predict(org_inputs[i].reshape(1, -1))")
+                exec(f"outputs_values.extend(outputs)")
+                targets_values.extend(org_targets[i])
+
+    # filter = pd.DataFrame({"timestamp": loader.dataset.data.index[-len(outputs_values):], "values": outputs_values.flatten()})
+    # filter.set_index("timestamp", inplace=True)
+    # filter["hour"] = filter.index.hour
+    # filter["values"] = filter.apply(lambda x: 0 if x["hour"] <= 6 or x["hour"] >= 20 else x["values"], axis=1)
+    # outputs_values = filter["values"].values
     return np.array(outputs_values), np.array(targets_values)
