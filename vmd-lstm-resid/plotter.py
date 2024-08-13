@@ -13,7 +13,7 @@ class Plotter:
 
     def _load_data(self):
         self.data["True"] = pd.read_csv(Path(self.path) / 'results1.csv')["True"]
-        self.data["svm"] = pd.read_csv(Path(self.path) / 'results1.csv')["Predicted"]
+        self.data["svm"] = pd.read_csv(Path(self.path) / 'results1s.csv')["Predicted"]
         self.data["lstm"] = pd.read_csv(Path(self.path) / 'results2.csv')["Predicted"]
         self.data["vmd-lstm"] = pd.read_csv(Path(self.path) / 'results3.csv')["Predicted"]
         self.data["vmd-lstm-resid"] = pd.read_csv(Path(self.path) / 'results4.csv')["Predicted"]
