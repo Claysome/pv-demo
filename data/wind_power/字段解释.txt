@@ -1,0 +1,9 @@
+WINDSPEED 预测风速
+WINDDIRECTION 风向
+TEMPERATURE 温度
+HUMIDITY 湿度
+PRESSURE 气压
+PREPOWER 预测功率（系统生成）
+ROUND(A.WS,1) 实际风速
+ROUND(A.POWER,0) 实际功率（计量口径一）
+YD15 实际功率（预测目标，计量口径二）
