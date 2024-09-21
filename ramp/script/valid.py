@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import itertools
 import numpy as np
 from sklearn.metrics import r2_score
+from copy import deepcopy
 
 
 class Preprocess:
@@ -21,6 +22,15 @@ class Preprocess:
         self.remove_outliers()
         self.stl_decomposition()
         self.ramp_event_detection()
+
+    def run_on_decomp(self):
+        self.reindex()
+        self.filter_valid_data()
+        self.remove_outliers()
+        data_trend, data_seasonal, data_residual = self.stl_decomposition()
+
+        return data_trend, data_seasonal, data_residual
+
 
     def reindex(self):
         date_format = "%d/%m/%Y %H:%M:%S"
@@ -46,9 +56,16 @@ class Preprocess:
         res = stl.fit()
         # fig = res.plot()
         # plt.show()
-        self.data['TREND'] = res.trend
-        self.data['SEASONAL'] = res.seasonal
-        self.data['RESIDUAL'] = res.resid
+        # self.data['TREND'] = res.trend
+        # self.data['SEASONAL'] = res.seasonal
+        # self.data['RESIDUAL'] = res.resid
+        data_trend = deepcopy(self.data)
+        data_seasonal = deepcopy(self.data)
+        data_residual = deepcopy(self.data)
+        data_trend['TARGET'] = res.trend
+        data_seasonal['TARGET'] = res.seasonal
+        data_residual['TARGET'] = res.resid
+        return data_trend, data_seasonal, data_residual
 
     def search_optim_stl_decomposition(self):
         periods  = range(5, 12)
@@ -115,4 +132,11 @@ class Preprocess:
 
 
 d = Preprocess('data/wind_data.csv')
-d.run()
+dt, ds, dr = d.run_on_decomp()
+
+print(dt.head())
+print(ds.head())
+print(dr.head())
+
+print(d.data['TARGET'].sum())
+print(dt['TARGET'].sum() + ds['TARGET'].sum() + dr['TARGET'].sum())
