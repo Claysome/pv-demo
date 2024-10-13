@@ -29,7 +29,7 @@ class PredictionTasks:
             print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {total_loss/len(train_loader):.4f}')
         print('Finished Training')
         torch.save(model.state_dict(), f'ramp/models/{model_name}.pth')
-        print('Model Saved')
+        print(f'Model Saved: {model_name}')
 
     @staticmethod
     def eval_lstm(model, test_loader, device):
